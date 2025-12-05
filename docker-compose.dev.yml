@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: user-api-sqlserver-dev
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD:?set in .env}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      MSSQL_AGENT_ENABLED: "false"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-dev-data:/var/opt/mssql
+    networks:
+      - user-api-network-dev
+
+  redis:
+    image: redis:7-alpine
+    container_name: user-api-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-dev-data:/data
+    networks:
+      - user-api-network-dev
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    container_name: user-api-dev
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION_DEV:?set in .env}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION_DEV:?set in .env}
+    ports:
+      - "8080:8080"
+      - "4711:4711"
+    volumes:
+      - .:/src
+      - /src/UserApiDemo.API/bin
+      - /src/UserApiDemo.API/obj
+      - /src/UserApiDemo.Domain/obj
+      - /src/UserApiDemo.Application/obj
+      - /src/UserApiDemo.Infrastructure/obj
+      - /src/UserApiDemo.Persistence/obj
+    depends_on:
+      - sqlserver
+      - redis
+    networks:
+      - user-api-network-dev
+    stdin_open: true
+    tty: true
+
+volumes:
+  sqlserver-dev-data:
+  redis-dev-data:
+
+networks:
+  user-api-network-dev:
+    driver: bridge

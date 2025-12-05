@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: user-api-sqlserver
+    environment:
+      SA_PASSWORD: ${SA_PASSWORD:?set in .env}
+      ACCEPT_EULA: "Y"
+      MSSQL_PID: Express
+      MSSQL_AGENT_ENABLED: "false"
+    ports:
+      - "1433:1433"
+    volumes:
+      - sqlserver-data:/var/opt/mssql
+    networks:
+      - user-api-network
+
+  redis:
+    image: redis:7-alpine
+    container_name: user-api-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - user-api-network
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: user-api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION:?set in .env}
+      - ConnectionStrings__Redis=${REDIS_CONNECTION:?set in .env}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - sqlserver
+      - redis
+    networks:
+      - user-api-network
+    restart: unless-stopped
+
+volumes:
+  sqlserver-data:
+  redis-data:
+
+networks:
+  user-api-network:
+    driver: bridge
