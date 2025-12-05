@@ -5,7 +5,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2022-latest
     container_name: user-api-sqlserver-dev
     environment:
-      SA_PASSWORD: ${SA_PASSWORD:?set in .env}
+      SA_PASSWORD: YourPassword123!
       ACCEPT_EULA: "Y"
       MSSQL_PID: Express
       MSSQL_AGENT_ENABLED: "false"
@@ -34,8 +34,8 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DefaultConnection=${DEFAULT_CONNECTION_DEV:?set in .env}
-      - ConnectionStrings__Redis=${REDIS_CONNECTION_DEV:?set in .env}
+      - ConnectionStrings__DefaultConnection=Server=sqlserver;Database=UserApiDemo;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;Encrypt=false
+      - ConnectionStrings__Redis=redis:6379
     ports:
       - "8080:8080"
       - "4711:4711"

@@ -1,0 +1,41 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug Dev Container API",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "docker-up-dev",
+            "program": "${workspaceFolder}/UserApiDemo.API/bin/Debug/net9.0/UserApiDemo.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/UserApiDemo.API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s",
+                "action": "openExternally"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        },
+        {
+            "name": ".NET Core Local Launch",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "${workspaceFolder}/UserApiDemo.API/bin/Debug/net9.0/UserApiDemo.API.dll",
+            "args": [],
+            "cwd": "${workspaceFolder}/UserApiDemo.API",
+            "stopAtEntry": false,
+            "serverReadyAction": {
+                "pattern": "\\bNow listening on:\\s+(https?://\\S+)",
+                "uriFormat": "%s",
+                "action": "openExternally"
+            },
+            "env": {
+                "ASPNETCORE_ENVIRONMENT": "Development"
+            }
+        }
+    ]
+}

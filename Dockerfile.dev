@@ -1,0 +1,21 @@
+# Development Dockerfile with debug capability
+FROM mcr.microsoft.com/dotnet/sdk:9.0 AS development
+
+WORKDIR /src
+
+COPY ["UserApiDemo.sln", "."]
+COPY ["UserApiDemo.API/UserApiDemo.API.csproj", "UserApiDemo.API/"]
+COPY ["UserApiDemo.Domain/UserApiDemo.Domain.csproj", "UserApiDemo.Domain/"]
+COPY ["UserApiDemo.Application/UserApiDemo.Application.csproj", "UserApiDemo.Application/"]
+COPY ["UserApiDemo.Infrastructure/UserApiDemo.Infrastructure.csproj", "UserApiDemo.Infrastructure/"]
+COPY ["UserApiDemo.Persistence/UserApiDemo.Persistence.csproj", "UserApiDemo.Persistence/"]
+
+RUN dotnet restore
+
+COPY . .
+
+EXPOSE 8080
+EXPOSE 4711
+
+# Bind explicitly to 0.0.0.0:8080 so container matches port mapping and ignores launchSettings defaults
+ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile", "--project", "UserApiDemo.API/UserApiDemo.API.csproj", "--urls", "http://0.0.0.0:8080"]
